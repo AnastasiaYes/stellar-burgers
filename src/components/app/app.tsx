@@ -18,8 +18,7 @@ import styles from './app.module.css';
 import { Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from '../../services/store';
 import { IngredientDetails, Modal, OrderInfo, FeedInfo } from '@components';
-import {ProtectedRoute} from "../protected-route/protected-route";
-
+import { ProtectedRoute } from '../protected-route/protected-route';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -43,7 +42,7 @@ const App = () => {
           <Route
             path='login'
             element={
-              <ProtectedRoute >
+              <ProtectedRoute>
                 <Login />
               </ProtectedRoute>
             }
@@ -59,7 +58,7 @@ const App = () => {
           <Route
             path='forgot-password'
             element={
-              <ProtectedRoute >
+              <ProtectedRoute>
                 <ForgotPassword />
               </ProtectedRoute>
             }
@@ -67,7 +66,7 @@ const App = () => {
           <Route
             path='reset-password'
             element={
-              <ProtectedRoute >
+              <ProtectedRoute>
                 <ResetPassword />
               </ProtectedRoute>
             }
