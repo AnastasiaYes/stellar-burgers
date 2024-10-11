@@ -38,6 +38,16 @@ export const ingredientsSlice = createSlice({
         state.ingredients = action.payload;
       });
   }
+  // selectors: {
+  //   selectBuns: (state) =>
+  //     state.ingredients.filter((ingredient) => ingredient.type === 'bun'),
+  //   selectMains: (state) =>
+  //     state.ingredients.filter((ingredient) => ingredient.type === 'main'),
+  //   selectSauces: (state) =>
+  //     state.ingredients.filter((ingredient) => ingredient.type === 'sauce'),
+  //   selectIngredients: (state) => state.ingredients,
+  //   selectIsLoading: (state) => state.isLoading
+  // }
 });
 
 export const selectBuns = (state: TIngredientsSlice) =>
@@ -49,10 +59,17 @@ export const selectMains = (state: TIngredientsSlice) =>
 export const selectSauces = (state: TIngredientsSlice) =>
   state.ingredients.filter((ingredient) => ingredient.type === 'sauce');
 
-export const selectIngredients = (state: { ingredients: TIngredientsSlice }) =>
-  state.ingredients.ingredients;
+export const selectIngredients = (state: TIngredientsSlice) =>
+  state.ingredients;
 
-export const selectIsLoading = (state: { ingredients: TIngredientsSlice }) =>
-  state.ingredients.isLoading;
+export const selectIsLoading = (state: TIngredientsSlice) =>
+  state.ingredients;
 
+// export const {
+//   selectBuns,
+//   selectMains,
+//   selectSauces,
+//   selectIngredients,
+//   selectIsLoading
+// } = ingredientsSlice.selectors;
 export default ingredientsSlice.reducer;
