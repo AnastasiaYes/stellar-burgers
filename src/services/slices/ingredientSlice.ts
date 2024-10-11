@@ -37,7 +37,7 @@ export const ingredientsSlice = createSlice({
         state.isLoading = false;
         state.ingredients = action.payload;
       });
-  },
+  }
 });
 
 export const selectBuns = (state: TIngredientsSlice) =>
@@ -54,6 +54,5 @@ export const selectIngredients = (state: { ingredients: TIngredientsSlice }) =>
 
 export const selectIsLoading = (state: { ingredients: TIngredientsSlice }) =>
   state.ingredients.isLoading;
-
 
 export default ingredientsSlice.reducer;

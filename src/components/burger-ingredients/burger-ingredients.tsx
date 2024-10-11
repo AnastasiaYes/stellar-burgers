@@ -13,8 +13,8 @@ import {
 export const BurgerIngredients: FC = () => {
   /** TODO: взять переменные из стора */
   const buns = useSelector((state) => selectBuns(state.ingredientData));
-  const mains = useSelector((state)=>  selectMains(state.ingredientData));
-  const sauces = useSelector((state)=>  selectSauces(state.ingredientData));
+  const mains = useSelector((state) => selectMains(state.ingredientData));
+  const sauces = useSelector((state) => selectSauces(state.ingredientData));
 
   const [currentTab, setCurrentTab] = useState<TTabMode>('bun');
   const titleBunRef = useRef<HTMLHeadingElement>(null);
