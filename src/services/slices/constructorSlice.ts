@@ -50,7 +50,7 @@ export const burgerConstructorSlice = createSlice({
     }
   },
   selectors: {
-    selectConstructorItem: (state) => state
+    selectConstructorItem: (state: TBurgerConstructorSlice) => state
   }
 });
 
@@ -60,5 +60,5 @@ export const {
   moveIngredient,
   emptyConstructor
 } = burgerConstructorSlice.actions;
-export const { selectConstructorItem } = burgerConstructorSlice.selectors;
+export const { selectConstructorItem } = burgerConstructorSlice.getSelectors();
 export default burgerConstructorSlice.reducer;

@@ -62,8 +62,7 @@ export const selectSauces = (state: TIngredientsSlice) =>
 export const selectIngredients = (state: TIngredientsSlice) =>
   state.ingredients;
 
-export const selectIsLoading = (state: TIngredientsSlice) =>
-  state.ingredients;
+export const selectIsLoading = (state: TIngredientsSlice) => state.ingredients;
 
 // export const {
 //   selectBuns,

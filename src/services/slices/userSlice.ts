@@ -88,13 +88,15 @@ export const getUserOrders = createAsyncThunk(
 export const userSlice = createSlice({
   name: 'user',
   initialState,
+  selectors: {
+    selectUser: (state) => state
+  },
   reducers: {
     authChecked: (state) => {
       state.isAuthChecked = true;
     }
   },
   extraReducers: (builder) => {
-    // getUser
     builder
       .addCase(getUser.rejected, (state) => {
         state.isLoading = false;
@@ -108,7 +110,7 @@ export const userSlice = createSlice({
         state.isLoading = false;
         state.isAuthChecked = true;
       })
-      // checkUser
+
       .addCase(checkUser.rejected, (state) => {
         state.isLoading = false;
         state.isAuthChecked = false;
@@ -121,7 +123,7 @@ export const userSlice = createSlice({
         state.isLoading = false;
         state.isAuthChecked = true;
       })
-      // updateUser
+
       .addCase(updateUser.rejected, (state) => {
         state.isLoading = false;
         state.error = 'обновление пользователя неудалось';
@@ -133,7 +135,7 @@ export const userSlice = createSlice({
       .addCase(updateUser.pending, (state) => {
         state.isLoading = true;
       })
-      // userRegister
+
       .addCase(userRegister.rejected, (state) => {
         state.isLoading = false;
         state.error = 'регистрация не удалась';
@@ -145,7 +147,7 @@ export const userSlice = createSlice({
         state.isLoading = false;
         state.user = action.payload.user;
       })
-      // userLogin
+
       .addCase(userLogin.rejected, (state) => {
         state.isLoading = false;
         state.isAuthChecked = false;
@@ -159,7 +161,7 @@ export const userSlice = createSlice({
         state.isAuthChecked = true;
         state.user = action.payload;
       })
-      // userLogout
+
       .addCase(userLogout.rejected, (state) => {
         state.isLoading = false;
         state.isAuthChecked = true;
@@ -189,4 +191,5 @@ export const userSlice = createSlice({
 });
 
 export const { authChecked } = userSlice.actions;
+export const { selectUser } = userSlice.getSelectors();
 export default userSlice.reducer;

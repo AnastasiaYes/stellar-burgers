@@ -74,6 +74,7 @@ export const orderSlice = createSlice({
   }
 });
 
-export const { selectOrderData, selectOrderRequest } = orderSlice.selectors;
+export const { selectOrderData, selectOrderRequest } =
+  orderSlice.getSelectors();
 export const { clearOrderData } = orderSlice.actions;
 export default orderSlice.reducer;

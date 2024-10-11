@@ -13,7 +13,7 @@ export const ProtectedRoute = ({
   allowOnlyGuest
 }: ProtectedRouteProps) => {
   const location = useLocation();
-  const { user, isAuthChecked } = useSelector((store) => store.userData);
+  const { user, isAuthChecked } = useSelector((store) => store.user);
   const isUserLoggedIn = user !== null; // пользователь вошел
 
   if (!isAuthChecked) {
