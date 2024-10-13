@@ -14,7 +14,7 @@ import { AppHeader } from '@components';
 // import { useEffect } from 'react';
 import styles from './app.module.css';
 import { Route, Routes, useNavigate, useLocation } from 'react-router-dom';
-import { useDispatch, useSelector } from '../../services/store';
+import store, { useDispatch, useSelector } from '../../services/store';
 import { IngredientDetails, Modal, OrderInfo, FeedInfo } from '@components';
 import { ProtectedRoute } from '../protected-route/protected-route';
 import { useEffect } from 'react';
@@ -42,7 +42,7 @@ const App = () => {
           <Route
             path='login'
             element={
-              <ProtectedRoute allowOnlyGuest={false}>
+              <ProtectedRoute allowOnlyGuest>
                 <Login />
               </ProtectedRoute>
             }
