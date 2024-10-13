@@ -94,13 +94,18 @@ export const userSlice = createSlice({
   reducers: {
     authChecked: (state) => {
       state.isAuthChecked = true;
+    },
+    resetError: (state) => {
+      return {
+        ...state,
+        error: null
+      };
     }
   },
   extraReducers: (builder) => {
     builder
       .addCase(getUser.rejected, (state) => {
         state.isLoading = false;
-        state.error = 'загрузка пользователя не удалась';
       })
       .addCase(getUser.pending, (state) => {
         state.isLoading = true;
@@ -114,7 +119,7 @@ export const userSlice = createSlice({
       .addCase(checkUser.rejected, (state) => {
         state.isLoading = false;
         state.isAuthChecked = false;
-        state.error = 'пользователь не зарегистрирован';
+        state.error = 'Пользователь не зарегистрирован';
       })
       .addCase(checkUser.pending, (state) => {
         state.isLoading = true;
@@ -126,7 +131,7 @@ export const userSlice = createSlice({
 
       .addCase(updateUser.rejected, (state) => {
         state.isLoading = false;
-        state.error = 'обновление пользователя неудалось';
+        state.error = 'Обновление пользователя неудалось';
       })
       .addCase(updateUser.fulfilled, (state, action) => {
         state.isLoading = false;
@@ -138,7 +143,7 @@ export const userSlice = createSlice({
 
       .addCase(userRegister.rejected, (state) => {
         state.isLoading = false;
-        state.error = 'регистрация не удалась';
+        state.error = 'Регистрация не удалась';
       })
       .addCase(userRegister.pending, (state) => {
         state.isLoading = true;
@@ -151,7 +156,7 @@ export const userSlice = createSlice({
       .addCase(userLogin.rejected, (state) => {
         state.isLoading = false;
         state.isAuthChecked = false;
-        state.error = 'вход не удался';
+        state.error = 'Вход не удался';
       })
       .addCase(userLogin.pending, (state) => {
         state.isLoading = true;
@@ -165,7 +170,7 @@ export const userSlice = createSlice({
       .addCase(userLogout.rejected, (state) => {
         state.isLoading = false;
         state.isAuthChecked = true;
-        state.error = 'выход не удался';
+        state.error = 'Выход не удался';
       })
       .addCase(userLogout.pending, (state) => {
         state.isLoading = true;
@@ -190,6 +195,6 @@ export const userSlice = createSlice({
   }
 });
 
-export const { authChecked } = userSlice.actions;
+export const { authChecked, resetError } = userSlice.actions;
 export const { selectUser } = userSlice.getSelectors();
 export default userSlice.reducer;

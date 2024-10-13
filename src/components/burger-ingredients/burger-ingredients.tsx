@@ -15,6 +15,7 @@ export const BurgerIngredients: FC = () => {
   const buns = useSelector((state) => selectBuns(state.ingredient));
   const mains = useSelector((state) => selectMains(state.ingredient));
   const sauces = useSelector((state) => selectSauces(state.ingredient));
+  // const sauces = useSelector((state) => selectSauces(state.ingredient));
 
   const [currentTab, setCurrentTab] = useState<TTabMode>('bun');
   const titleBunRef = useRef<HTMLHeadingElement>(null);
