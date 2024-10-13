@@ -15,7 +15,7 @@ import orderReducer from './slices/orderSlice';
 
 const rootReducer = combineReducers({
   ingredient: ingredientsReducer,
-  constructor: constructorReducer,
+  constructorItems: constructorReducer,
   user: userReducer,
   feed: feedReducer,
   order: orderReducer

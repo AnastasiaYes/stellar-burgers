@@ -12,13 +12,14 @@ import {
 import '../../index.css';
 import { AppHeader } from '@components';
 // import { useEffect } from 'react';
-// import { getAllIngredients } from '../../services/ingredientSlice/ingredientsSlice';
-// import { getUser } from '../../services/userSlice/userSlice';
 import styles from './app.module.css';
 import { Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from '../../services/store';
 import { IngredientDetails, Modal, OrderInfo, FeedInfo } from '@components';
 import { ProtectedRoute } from '../protected-route/protected-route';
+import { useEffect } from 'react';
+import { getUser } from '../../services/slices/userSlice';
+import { getIngredients } from '../../services/slices/ingredientSlice';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -26,11 +27,10 @@ const App = () => {
   const location = useLocation();
   const backgroundLocation = location.state?.background;
   const goBack = () => navigate(-1);
-  //
-  // useEffect(() => {
-  //   dispatch(getAllIngredients());
-  //   dispatch(getUser());
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(getIngredients());
+    dispatch(getUser());
+  }, [dispatch]);
 
   return (
     <>
@@ -42,7 +42,7 @@ const App = () => {
           <Route
             path='login'
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowOnlyGuest={false}>
                 <Login />
               </ProtectedRoute>
             }
@@ -58,7 +58,7 @@ const App = () => {
           <Route
             path='forgot-password'
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowOnlyGuest={false}>
                 <ForgotPassword />
               </ProtectedRoute>
             }
@@ -66,7 +66,7 @@ const App = () => {
           <Route
             path='reset-password'
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowOnlyGuest={false}>
                 <ResetPassword />
               </ProtectedRoute>
             }
@@ -74,7 +74,7 @@ const App = () => {
           <Route
             path='/profile'
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowOnlyGuest={false}>
                 <Profile />
               </ProtectedRoute>
             }
@@ -82,7 +82,7 @@ const App = () => {
           <Route
             path='profile/orders'
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowOnlyGuest={false}>
                 <ProfileOrders />
               </ProtectedRoute>
             }

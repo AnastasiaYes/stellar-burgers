@@ -21,7 +21,7 @@ export const BurgerConstructor: FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const constructorItems = useSelector((state) =>
-    selectConstructorItem(state.constructor)
+    selectConstructorItem(state.constructorItems)
   );
   // console.log(store.getState());
   let orderRequest = useSelector((state) => selectOrderRequest(state.order));

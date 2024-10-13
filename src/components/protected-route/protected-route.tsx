@@ -4,7 +4,7 @@ import { useLocation, Navigate } from 'react-router-dom';
 import { Preloader } from '../../components/ui/preloader/preloader';
 
 type ProtectedRouteProps = {
-  allowOnlyGuest?: boolean; //разрешить просмотр только гостю
+  allowOnlyGuest: boolean; //разрешить просмотр только гостю
   children: React.ReactElement;
 };
 
