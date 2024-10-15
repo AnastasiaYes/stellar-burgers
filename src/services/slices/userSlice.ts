@@ -89,7 +89,8 @@ export const userSlice = createSlice({
   name: 'user',
   initialState,
   selectors: {
-    selectUser: (state) => state
+    selectUser: (state) => state,
+    selectPlacedOrders: (state) => state.userOrders
   },
   reducers: {
     authChecked: (state) => {
@@ -194,5 +195,5 @@ export const userSlice = createSlice({
 });
 
 export const { authChecked, resetError } = userSlice.actions;
-export const { selectUser } = userSlice.getSelectors();
+export const { selectUser, selectPlacedOrders } = userSlice.getSelectors();
 export default userSlice.reducer;
