@@ -95,12 +95,10 @@ export const userSlice = createSlice({
     authChecked: (state) => {
       state.isAuthChecked = true;
     },
-    resetError: (state) => {
-      return {
-        ...state,
-        error: null
-      };
-    }
+    resetError: (state) => ({
+      ...state,
+      error: null
+    })
   },
   extraReducers: (builder) => {
     builder

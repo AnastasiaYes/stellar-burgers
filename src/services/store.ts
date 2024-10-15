@@ -12,13 +12,15 @@ import userReducer from './slices/userSlice';
 import feedReducer from './slices/feedSlice';
 import constructorReducer from './slices/constructorSlice';
 import orderReducer from './slices/orderSlice';
+import placedOrdersReducer from './slices/placedOrdersSlice';
 
 const rootReducer = combineReducers({
   ingredient: ingredientsReducer,
   constructorItems: constructorReducer,
   user: userReducer,
   feed: feedReducer,
-  order: orderReducer
+  order: orderReducer,
+  placedOrders: placedOrdersReducer
 });
 const store = configureStore({
   reducer: rootReducer,

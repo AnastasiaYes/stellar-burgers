@@ -3,7 +3,11 @@ import { RegisterUI } from '@ui-pages';
 import { useDispatch, useSelector } from '../../services/store';
 import { Simulate } from 'react-dom/test-utils';
 import error = Simulate.error;
-import { resetError, selectUser, userRegister } from '../../services/slices/userSlice';
+import {
+  resetError,
+  selectUser,
+  userRegister
+} from '../../services/slices/userSlice';
 import { Preloader } from '@ui';
 import { Navigate } from 'react-router-dom';
 
@@ -21,7 +25,7 @@ export const Register: FC = () => {
   const errorText = error || '';
   useEffect(() => {
     dispatch(resetError());
-    }, []);
+  }, []);
 
   return (
     <>
