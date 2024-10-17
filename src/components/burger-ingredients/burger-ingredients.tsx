@@ -12,9 +12,10 @@ import {
 
 export const BurgerIngredients: FC = () => {
   /** TODO: взять переменные из стора */
-  const buns = useSelector((state) => selectBuns(state.ingredient));
-  const mains = useSelector((state) => selectMains(state.ingredient));
-  const sauces = useSelector((state) => selectSauces(state.ingredient));
+  const ingrs = useSelector((state) => state.ingredient.ingredients);
+  const buns = selectBuns(ingrs);
+  const mains: any = selectMains(ingrs);
+  const sauces: any = selectSauces(ingrs);
   // const sauces = useSelector((state) => selectSauces(state.ingredient));
 
   const [currentTab, setCurrentTab] = useState<TTabMode>('bun');

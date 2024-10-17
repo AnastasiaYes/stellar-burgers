@@ -30,8 +30,8 @@ export const BurgerConstructor: FC = () => {
 
   const onOrderClick = () => {
     if (!constructorItems.bun || orderRequest) return;
-    if (!user) {
-      navigate('/login'), { replace: true };
+    if (!user.user) {
+      navigate('/login', { replace: true, state: { redirectTo: '/' } });
       return;
     }
     const orderIngredients = [
