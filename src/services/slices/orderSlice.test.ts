@@ -43,79 +43,55 @@ const mockOrderToPostResponse: TNewOrderResponse = {
         number: 53445,
         ingredients: ['643d69a5c3f7b9001cfa093d', '643d69a5c3f7b9001cfa093e']
     },
-    name: 'Evgeniya'
+    name: 'nik'
+};
+
+const expectStateToEqual = (actionType: string, expectedState: TOrderSlice, payload?: any) => {
+  const action = payload ? { type: actionType, payload } : { type: actionType };
+  const testState = orderSlice.reducer(initialState, action);
+  expect(testState).toEqual(expectedState);
 };
 
 describe('проверим слайс orderSlice', () => {
     test('проверим fetchOrderByNumber.pending', () => {
-        const action = {
-            type: fetchOrderByNumber.pending.type
-        };
-        const testState = orderSlice.reducer(initialState, action);
-        const checkState: TOrderSlice = { ...initialState, isLoading: true };
-        expect(testState).toEqual(checkState);
+      const expectedState: TOrderSlice = { ...initialState, isLoading: true };
+      expectStateToEqual(fetchOrderByNumber.pending.type, expectedState)
     });
 
     test('проверим fetchOrderByNumber.fulfilled', () => {
-        const action = {
-            type: fetchOrderByNumber.fulfilled.type,
-            payload: mockOrderResponse
-        };
-
-        const testState = orderSlice.reducer(initialState, action);
-        const checkState: TOrderSlice = {
-            ...initialState,
-            orderData: mockOrderResponse.orders[0]
-        };
-
-        expect(testState).toEqual(checkState);
+      const expectedState: TOrderSlice = {
+        ...initialState,
+        orderData: mockOrderResponse.orders[0]
+      };
+      expectStateToEqual(fetchOrderByNumber.fulfilled.type, expectedState, mockOrderResponse);
     });
 
     test('проверим fetchOrderByNumber.rejected', () => {
-        const action = {
-            type: fetchOrderByNumber.rejected.type
-        };
-
-        const testState = orderSlice.reducer(initialState, action);
-        const checkState: TOrderSlice = {
-            ...initialState,
-            fetchOrderByIdError: 'Ошибка загрузки заказа'
-        };
-
-        expect(testState).toEqual(checkState);
+      const expectedState: TOrderSlice = {
+        ...initialState,
+        fetchOrderByIdError: 'Ошибка загрузки заказа'
+      };
+      expectStateToEqual(fetchOrderByNumber.rejected.type, expectedState);
     });
 
     test('проверим postOrder.pending', () => {
-        const action = {
-            type: postOrder.pending.type
-        };
-        const testState = orderSlice.reducer(initialState, action);
-        const checkState: TOrderSlice = { ...initialState, orderRequest: true };
-        expect(testState).toEqual(checkState);
+      const expectedState: TOrderSlice = { ...initialState, orderRequest: true };
+      expectStateToEqual(postOrder.pending.type, expectedState);
     });
 
     test('проверим postOrder.fulfilled', () => {
-        const action = {
-            type: postOrder.fulfilled.type,
-            payload: mockOrderToPostResponse
-        };
-        const testState = orderSlice.reducer(initialState, action);
-        const checkState: TOrderSlice = {
-            ...initialState,
-            orderData: mockOrderToPostResponse.order
-        };
-        expect(testState).toEqual(checkState);
+      const expectedState: TOrderSlice = {
+        ...initialState,
+        orderData: mockOrderToPostResponse.order
+      };
+      expectStateToEqual(postOrder.fulfilled.type, expectedState, mockOrderToPostResponse);
     });
 
     test('проверим postOrder.rejected', () => {
-        const action = {
-            type: postOrder.rejected.type
-        };
-        const testState = orderSlice.reducer(initialState, action);
-        const checkState: TOrderSlice = {
-            ...initialState,
-            postOrderError: 'Ошибка размещения заказа'
-        };
-        expect(testState).toEqual(checkState);
+      const expectedState: TOrderSlice = {
+        ...initialState,
+        postOrderError: 'Ошибка размещения заказа'
+      };
+      expectStateToEqual(postOrder.rejected.type, expectedState);
     });
 });

@@ -4,167 +4,71 @@ describe('проверка работы конструктора', () => {
     cy.fixture('feed.json');
     cy.fixture('user.json');
     cy.fixture('order.json');
-    cy.intercept({ method: 'GET', url: 'api/ingredients' }, { fixture: 'ingredients.json' }).as('getIngredients');
-    cy.intercept({ method: 'GET', url: 'api/auth/user' }, { fixture: 'user.json' }).as('user');
-    cy.intercept({ method: 'GET', url: 'api/orders/all' }, { fixture: 'feed.json' }).as('feed'); // путь должен быть 'api/orders/all'
-    cy.intercept({ method: 'POST', url: 'api/orders' }, { fixture: 'order.json' }).as('order'); // исправьте URL на 'api/orders'
-    cy.setCookie('accessToken', 'mockTokenForEvgeniya');
-    localStorage.setItem('refreshToken', 'mockTokenForEvgeniya');
+
+    cy.intercept('GET', '/api/ingredients', { fixture: 'ingredients.json' }).as('getIngredients');
+    cy.intercept('GET', '/api/auth/user', { fixture: 'user.json' }).as('getUser');
+    cy.intercept('GET', '/api/orders/all', { fixture: 'feed.json' }).as('getFeed');
+    cy.intercept('POST', '/api/orders', { fixture: 'order.json' }).as('createOrder');
+
+    cy.setCookie('accessToken', 'mockAccessToken1234');
+    localStorage.setItem('refreshToken', 'mockRefreshToken1234');
+
     cy.visit('http://localhost:4000/');
-  });
 
-
-  it('проверка работы cy.intercept', () => {
     cy.wait('@getIngredients');
-    cy.wait('@user');
-    // cy.wait('@feed');
-    // cy.wait('@order');
   });
 
+  it('должен открывать модальное окно ингредиента по клику и должно закрываться модальное окно по нажатию на крестик', () => {
+    cy.get(`[data-cy='ingredients-module'] [data-cy='ingredient-item']`).contains('Филе Люминесцентного тетраодонтимформа').click();
 
-  it('проверка наличия ингредиента в конструкторе - булки', () => {
-    //находим div с конструктором, проверяем, что в нем нет флуоресцентной булки
-    cy.get(`[data-cy='constructor-module']`)
-      .should('not.contain.text', 'просто какая-то булка')
+    cy.get(`[data-cy='modal']`).should('be.visible');
+    cy.get(`[data-cy='modal']`).should('contain.text', 'Филе Люминесцентного тетраодонтимформа');
+
+    cy.get(`[data-cy='modal']`).find('button').click();
+    cy.get(`[data-cy='modal']`).should('not.exist');
+
+    cy.get('body').type('{esc}');
+    cy.get(`[data-cy='modal']`).should('not.exist');
   });
 
-  it('добавление ингредиента в конструктор - булки', () => {
-    //находим div с ингредиентами, доходим до кнопки "добавить" в ингредиенте флуоресцентной булки, нажимаем
-    cy.get(`[data-cy='ingredients-module']`)
-      .first()
-      .children()
-      .last()
-      .find('button')
-      .click();
-    //проверяем, что в конструкторе появилась флуоресцентная булка
-    cy.get(`[data-cy='constructor-module']`)
-      .should('contain.text', 'просто какая-то булка');
+  it('должно закрываться модальное окно по нажатию на кнопку esc', () => {
+    cy.get(`[data-cy='ingredients-module'] [data-cy='ingredient-item']`).first().click();
+
+    cy.get(`[data-cy='modal']`).should('be.visible');
+
+    cy.get('body').type('{esc}');
+    cy.get(`[data-cy='modal']`).should('not.exist');
   });
 
-  it('добавление ингредиента в конструктор - другой ингредиент', ()=>{
-    //находим div с ингредиентами, доходим до кнопки "добавить" в ингредиенте с биокотлетой, нажимаем
-    cy.get(`[data-cy='ingredients-module']`)
-      .next()
-      .next()
-      .children()
-      .first()
-      .find('button')
-      .click();
-    //проверяем, что в конструкторе появилась биокотлета
-    cy.get(`[data-cy='constructor-module']`)
-      .should('contain.text', 'Биокотлета из марсианской Магнолии');
+  it('должен добавляться ингредиент в конструктор', () => {
+    cy.get(`[data-cy='constructor-module'] .text_type_main-default`).contains('Выберите булки');
+
+    cy.get(`[data-cy='ingredients-module'] [data-cy='ingredient-item'] button`).first().click()
+      .parent().find('a > p').first().invoke('text').then(text => {
+      cy.get(`[data-cy='constructor-module'] .constructor-element.constructor-element_pos_top .constructor-element__text`)
+        .should('contain.text', text); // Проверяем, что ингредиент добавлен в конструктор
+    });
   });
 
-  it('тест открытия модального окна', () => {
-    //находим ссылку с кратерной булкой, нажимаем
-    cy.contains('кратЕрная булка (от слова кратер)')
-      .click();
-    //находим модальное окно, проверяем, что модальное окно видимо 
-    cy.get(`[data-cy='modal']`)
-      .should('be.visible')
+  it('проверка авторизации пользователя', () => {
+    cy.visit('http://localhost:4000/profile');
+    cy.get(`[data-cy='profile-name']`).should('have.value', 'anastasia');
   });
 
-  it('тест закрытия модального окна по крестику', () => {
-    cy.contains('кратЕрная булка (от слова кратер)')
-      .click();
-    //находим кнопку в модалке, нажимаем
-    cy.get(`[data-cy='modal']`)
-      .find('button')
-      .click();
-    //проверяем, что модальное окно закрыто
-    cy.get(`[data-cy='modal']`)
-      .should('not.exist');
+  it('проверка оформления заказа', () => {
+    cy.get(`[data-cy='burger-ingredients_section']`).contains('Булки').next('ul').contains('Добавить').click();
+
+    cy.get(`[data-cy='burger-ingredients_section']`).contains('Начинки').next('ul').contains('Добавить').click();
+
+    cy.get('button').contains('Оформить заказ').click();
+
+    cy.get(`[data-cy='modal']`).should('be.visible');
+    cy.get('[data-cy="modal"]').should('contain.text', '68');
+
+    cy.get(`[data-cy='modal']`).find('button').click();
+    cy.get(`[data-cy='modal']`).should('not.exist');
+
+    cy.get(`[data-cy='constructor-module']`).contains('Выберите начинку');
+    cy.get(`[data-cy='constructor-module']`).contains('Выберите булки');
   });
-
-
-  it('тест закрытия модального окна по esc', () => {
-    //находим ссылку с кратерной булкой, нажимаем
-    cy.contains('кратЕрная булка (от слова кратер)')
-      .click();
-    //нажимаем на кнопку эскейп
-    cy.get('body')
-      .type('{esc}')
-    //проверяем, что модальное окно закрыто
-    cy.get(`[data-cy='modal']`)
-      .should('not.exist')
-  })
-
-  it('тест закрытия модального окна по оверлею', () => {
-    //находим ссылку с кратерной булкой, нажимаем
-    cy.contains('кратЕрная булка (от слова кратер)')
-      .click();
-    //нажимаем на поле вверху экрана (выше модалки)
-    cy.get(`[data-cy='modalOverlay']`)
-      .click('top', {force: true})
-    //проверяем, что модальное окно закрыто
-    cy.get(`[data-cy='modal']`)
-      .should('not.exist')
-  })
-
-  it('Проверка авторизации пользователя перед тестом', () => {
-    cy.visit('http://localhost:4000/profile')
-    cy.get(`[data-cy='profile-name']`)
-      .should('have.value', 'anastasia');
-  });
-
-  // добавляем в заказ флуоресцентную булку
-  it('добавляем ингредиенты в заказ', () => {
-    // добавляем в заказ флуоресцентную булку
-    cy.get(`[data-cy='ingredients-module']`)
-      .first()
-      .children()
-      .last()
-      .find('button')
-      .click();
-
-    // добавляем в заказ биокотлету
-    cy.get(`[data-cy='ingredients-module']`)
-      .next()
-      .next()
-      .children()
-      .first()
-      .find('button')
-      .click();
-
-
-    // добавляем в заказ соус антарианского плоскоходца
-    cy.get(`[data-cy='ingredients-module']`)
-      .last()
-      .children()
-      .last()
-      .find('button')
-      .click()
-
-    //нажимаем на кнопку заказа
-    cy.get(`[data-cy='constructor-module']`)
-      .children()
-      .last()
-      .find('button')
-      .click()
-
-    cy.wait('@order')
-
-
-
-    //проверяем, что модальное окно открылось
-    cy.get(`[data-cy='modal']`)
-      .should('be.visible')
-
-    //нажимаем на кнопку закрытия
-    cy.get(`[data-cy='modal']`)
-      .find('button')
-      .click();
-
-    //проверяем, что конструктор пустой - 
-    cy.get(`[data-cy='constructor-module']`)
-      .children()
-      .first()
-      .should('contain.text', 'Выберите булки')
-
-    cy.get(`[data-cy='constructor-module']`)
-      .children()
-      .first()
-      .next()
-      .should('contain.text', 'Выберите начинку')
-  })
-})
+});

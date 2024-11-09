@@ -1,267 +1,160 @@
 import { expect, test } from '@jest/globals';
 import {
-    initialState,
-    getUser,
-    userLogout,
-    userLogin,
-    userSlice,
-    userRegister,
-    updateUser,
-    IUserSlice,
-    checkUser
+  initialState,
+  getUser,
+  userLogout,
+  userLogin,
+  userSlice,
+  userRegister,
+  updateUser,
+  IUserSlice,
+  checkUser
 } from '../slices/userSlice';
 import { TUserResponse } from '../../utils/burger-api';
 
-describe('проверим слайс userSlice', () => {
-    beforeAll(() => {
-        global.localStorage = {
-            setItem: jest.fn(),
-            getItem: jest.fn(),
-            removeItem: jest.fn(),
-            clear: jest.fn(),
-            key: jest.fn(),
-            length: 0
-        };
+describe('Тестирование слайса userSlice', () => {
+
+  const mockUserResponse: TUserResponse = {
+    success: true,
+    user: {
+      email: 'nik@yandex.ru',
+      name: 'Nik'
+    }
+  };
+
+  const testAction = (actionType: string, payload?: any) => {
+    return userSlice.reducer(initialState, { type: actionType, payload });
+  };
+
+  const testPendingState = (actionType: string) => {
+    const newState = testAction(actionType);
+    expect(newState).toEqual({ ...initialState, isLoading: true });
+  };
+
+  const testFulfilledState = (actionType: string, payload: any, expectedState: IUserSlice) => {
+    const newState = testAction(actionType, payload);
+    expect(newState).toEqual(expectedState);
+  };
+
+  const testRejectedState = (actionType: string, expectedState: IUserSlice) => {
+    const newState = testAction(actionType);
+    expect(newState).toEqual(expectedState);
+  };
+
+  test('getUser.pending', () => {
+    testPendingState(getUser.pending.type);
+  });
+
+  test('getUser.fulfilled', () => {
+    testFulfilledState(getUser.fulfilled.type, mockUserResponse, {
+      ...initialState,
+      user: mockUserResponse.user,
+      isAuthChecked: true
     });
+  });
 
-    jest.mock('../../utils/cookie', () => ({
-        setCookie: jest.fn(),
-        getCookie: jest.fn(),
-        deleteCookie: jest.fn()
-    }));
-
-    afterAll(() => {
-        jest.clearAllMocks();
+  test('getUser.rejected', () => {
+    testRejectedState(getUser.rejected.type, {
+      ...initialState,
+      isLoading: false,
+      error: 'Ошибка получения данных'
     });
+  });
 
-    const mockUserResponse: TUserResponse = {
-        success: true,
-        user: {
-            email: 'MammaMia@yandex.ru',
-            name: 'Donna'
-        }
-    };
+  test('checkUser.pending', () => {
+    testPendingState(checkUser.pending.type);
+  });
 
-    // getUser
-    test('проверим getUser.pending', () => {
-        const action = {
-            type: getUser.pending.type
-        };
-        const testState = userSlice.reducer(initialState, action);
-        const checkState: IUserSlice = { ...initialState, isLoading: true };
+  test('checkUser.fulfilled', () => {
+    const action = checkUser.fulfilled.type;
+    const newState = testAction(action);
+    expect(newState).toEqual({ ...initialState, isAuthChecked: true });
+  });
 
-        expect(testState).toEqual(checkState);
+  test('checkUser.rejected', () => {
+    testRejectedState(checkUser.rejected.type, {
+      ...initialState,
+      isLoading: false,
+      error: 'Пользователь не зарегистрирован'
     });
+  });
 
-    test('проверим getUser.fulfilled', () => {
-        const action = {
-            type: getUser.fulfilled.type,
-            payload: mockUserResponse
-        };
+  // Тест для updateUser
+  test('updateUser.pending', () => {
+    testPendingState(updateUser.pending.type);
+  });
 
-        const testState = userSlice.reducer(initialState, action);
-        const checkState: IUserSlice = {
-            ...initialState,
-            user: mockUserResponse.user,
-            isAuthChecked: true
-        };
-
-        expect(testState).toEqual(checkState);
+  test('updateUser.fulfilled', () => {
+    testFulfilledState(updateUser.fulfilled.type, mockUserResponse, {
+      ...initialState,
+      user: mockUserResponse.user,
     });
+  });
 
-    test('проверим getUser.rejected', () => {
-        const action = {
-            type: getUser.rejected.type
-        };
-
-        const testState = userSlice.reducer(initialState, action);
-        const checkState: IUserSlice = {
-            ...initialState,
-            isLoading: false
-        };
-
-        expect(testState).toEqual(checkState);
+  test('updateUser.rejected', () => {
+    testRejectedState(updateUser.rejected.type, {
+      ...initialState,
+      isLoading: false,
+      error: 'Обновление пользователя не удалось'
     });
+  });
 
-    // checkUser
-    test('проверим checkUser.pending', () => {
-        const action = {
-            type: checkUser.pending.type
-        };
-        const testState = userSlice.reducer(initialState, action);
-        const checkState: IUserSlice = { ...initialState, isLoading: true };
+  test('userRegister.pending', () => {
+    testPendingState(userRegister.pending.type);
+  });
 
-        expect(testState).toEqual(checkState);
+  test('userRegister.fulfilled', () => {
+    testFulfilledState(userRegister.fulfilled.type, mockUserResponse, {
+      ...initialState,
+      user: mockUserResponse.user,
     });
+  });
 
-    test('проверим checkUser.fulfilled', () => {
-        const action = {
-            type: checkUser.fulfilled.type
-        };
-        const testState = userSlice.reducer(initialState, action);
-        const checkState: IUserSlice = { ...initialState, isAuthChecked: true };
-
-        expect(testState).toEqual(checkState);
+  test('userRegister.rejected', () => {
+    testRejectedState(userRegister.rejected.type, {
+      ...initialState,
+      isLoading: false,
+      error: 'Регистрация не удалась'
     });
+  });
 
-    test('проверим checkUser.rejected', () => {
-        const action = {
-            type: checkUser.rejected.type
-        };
-        const testState = userSlice.reducer(initialState, action);
-        const checkState: IUserSlice = {
-            ...initialState,
-            isAuthChecked: false,
-            error: 'Пользователь не зарегистрирован'
-        };
+  test('userLogin.pending', () => {
+    testPendingState(userLogin.pending.type);
+  });
 
-        expect(testState).toEqual(checkState);
+  test('userLogin.fulfilled', () => {
+    const action = userLogin.fulfilled.type;
+    const newState = testAction(action, mockUserResponse.user);
+    expect(newState).toEqual({
+      ...initialState,
+      user: mockUserResponse.user,
+      isAuthChecked: true
     });
+  });
 
-    // updateUser
-    test('проверим updateUser.pending', () => {
-        const action = {
-            type: updateUser.pending.type
-        };
-        const testState = userSlice.reducer(initialState, action);
-        const checkState: IUserSlice = { ...initialState, isLoading: true };
-
-        expect(testState).toEqual(checkState);
+  test('userLogin.rejected', () => {
+    testRejectedState(userLogin.rejected.type, {
+      ...initialState,
+      isLoading: false,
+      error: 'Вход не удался'
     });
+  });
 
-    test('проверим updateUser.fulfilled', () => {
-        const action = {
-            type: updateUser.fulfilled.type,
-            payload: mockUserResponse
-        };
-        const testState = userSlice.reducer(initialState, action);
-        const checkState: IUserSlice = {
-            ...initialState,
-            user: mockUserResponse.user
-        };
+  test('userLogout.pending', () => {
+    testPendingState(userLogout.pending.type);
+  });
 
-        expect(testState).toEqual(checkState);
+  test('userLogout.fulfilled', () => {
+    const newState = testAction(userLogout.fulfilled.type);
+    expect(newState).toEqual(initialState);
+  });
+
+  test('userLogout.rejected', () => {
+    testRejectedState(userLogout.rejected.type, {
+      ...initialState,
+      isAuthChecked: true,
+      isLoading: false,
+      error: 'Выход не удался'
     });
-
-    test('проверим updateUser.rejected', () => {
-        const action = {
-            type: updateUser.rejected.type
-        };
-        const testState = userSlice.reducer(initialState, action);
-        const checkState: IUserSlice = {
-            ...initialState,
-            error: 'Обновление пользователя неудалось'
-        };
-
-        expect(testState).toEqual(checkState);
-    });
-
-    // userRegister
-    test('проверим userRegister.pending', () => {
-        const action = {
-            type: userRegister.pending.type
-        };
-        const testState = userSlice.reducer(initialState, action);
-        const checkState: IUserSlice = { ...initialState, isLoading: true };
-
-        expect(testState).toEqual(checkState);
-    });
-
-    test('проверим userRegister.fulfilled', () => {
-        const action = {
-            type: userRegister.fulfilled.type,
-            payload: mockUserResponse
-        };
-        const testState = userSlice.reducer(initialState, action);
-        const checkState: IUserSlice = {
-            ...initialState,
-            user: mockUserResponse.user
-        };
-
-        expect(testState).toEqual(checkState);
-    });
-
-    test('проверим userRegister.rejected', () => {
-        const action = {
-            type: userRegister.rejected.type
-        };
-        const testState = userSlice.reducer(initialState, action);
-        const checkState: IUserSlice = {
-            ...initialState,
-            error: 'Регистрация не удалась'
-        };
-
-        expect(testState).toEqual(checkState);
-    });
-
-    // userLogin
-    test('проверим userLogin.pending', () => {
-        const action = {
-            type: userLogin.pending.type
-        };
-        const testState = userSlice.reducer(initialState, action);
-        const checkState: IUserSlice = { ...initialState, isLoading: true };
-
-        expect(testState).toEqual(checkState);
-    });
-
-    test('проверим userLogin.fulfilled', () => {
-        const action = {
-            type: userLogin.fulfilled.type,
-            payload: mockUserResponse.user
-        };
-        const testState = userSlice.reducer(initialState, action);
-        const checkState: IUserSlice = {
-            ...initialState,
-            user: mockUserResponse.user,
-            isAuthChecked: true
-        };
-
-        expect(testState).toEqual(checkState);
-    });
-
-    test('проверим userLogin.rejected', () => {
-        const action = {
-            type: userLogin.rejected.type
-        };
-        const testState = userSlice.reducer(initialState, action);
-        const checkState: IUserSlice = { ...initialState, error: 'Вход не удался' };
-
-        expect(testState).toEqual(checkState);
-    });
-
-    // userLogout
-    test('проверим userLogout.pending', () => {
-        const action = {
-            type: userLogout.pending.type
-        };
-        const testState = userSlice.reducer(initialState, action);
-        const checkState: IUserSlice = { ...initialState, isLoading: true };
-
-        expect(testState).toEqual(checkState);
-    });
-
-    test('проверим userLogout.fulfilled', () => {
-        const action = {
-            type: userLogout.fulfilled.type
-        };
-        const testState = userSlice.reducer(initialState, action);
-        const checkState: IUserSlice = initialState;
-
-        expect(testState).toEqual(checkState);
-    });
-
-    test('проверим userLogout.rejected', () => {
-        const action = {
-            type: userLogout.rejected.type
-        };
-        const testState = userSlice.reducer(initialState, action);
-        const checkState: IUserSlice = {
-            ...initialState,
-            isAuthChecked: true,
-            error: 'Выход не удался'
-        };
-
-        expect(testState).toEqual(checkState);
-    });
+  });
 });

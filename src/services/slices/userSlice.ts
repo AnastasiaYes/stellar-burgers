@@ -105,6 +105,7 @@ export const userSlice = createSlice({
     builder
       .addCase(getUser.rejected, (state) => {
         state.isLoading = false;
+        state.error = 'Ошибка получения данных';
       })
       .addCase(getUser.pending, (state) => {
         state.isLoading = true;
@@ -130,7 +131,7 @@ export const userSlice = createSlice({
 
       .addCase(updateUser.rejected, (state) => {
         state.isLoading = false;
-        state.error = 'Обновление пользователя неудалось';
+        state.error = 'Обновление пользователя не удалось';
       })
       .addCase(updateUser.fulfilled, (state, action) => {
         state.isLoading = false;

@@ -37,23 +37,32 @@ const mockFeedResponse: TFeedsResponse = {
   totalToday: 3
 };
 
+const createPendingAction = () => ({ type: getFeeds.pending.type });
+const createFulfilledAction = (payload: TFeedsResponse) => ({
+  type: getFeeds.fulfilled.type,
+  payload
+});
+const createRejectedAction = () => ({
+  type: getFeeds.rejected.type,
+  error: { message: 'Ошибка загрузки ленты' }
+});
+
+const createTestState = (action: any): TFeedSlice => feedSlice.reducer(initialState, action);
+
 describe('проверим слайс feedSlice', () => {
-  test('проверим getFeeds.pending', () => {
-    const action = {
-      type: getFeeds.pending.type
-    };
-    const testState = feedSlice.reducer(initialState, action);
-    const checkState = { ...initialState, isLoading: true };
-    expect(testState).toEqual(checkState);
+
+  test('состояние при getFeeds.pending изменяется на загрузку', () => {
+    const action = createPendingAction();
+    const testState = createTestState(action);
+    const expectedState = { ...initialState, isLoading: true };
+    expect(testState).toEqual(expectedState);
   });
 
-  test('проверим getFeeds.fulfilled', () => {
-    const action = {
-      type: getFeeds.fulfilled.type,
-      payload: mockFeedResponse
-    };
-    const testState = feedSlice.reducer(initialState, action);
-    const checkState: TFeedSlice = {
+  test('состояние при getFeeds.fulfilled обновляется с данными', () => {
+    const action = createFulfilledAction(mockFeedResponse);
+    const testState = createTestState(action);
+
+    const expectedState: TFeedSlice = {
       orders: mockFeedResponse.orders,
       feed: {
         total: mockFeedResponse.total,
@@ -62,19 +71,19 @@ describe('проверим слайс feedSlice', () => {
       isLoading: false,
       error: null
     };
-    expect(testState).toEqual(checkState);
+    expect(testState).toEqual(expectedState);
   });
 
-  test('проверим getFeeds.rejected', () => {
-    const action = {
-      type: getFeeds.rejected.type
-    };
-    const testState = feedSlice.reducer(initialState, action);
-    const checkState: TFeedSlice = {
+  test('состояние при getFeeds.rejected обновляется с ошибкой', () => {
+    const action = createRejectedAction();
+    const testState = createTestState(action);
+
+    const expectedState: TFeedSlice = {
       ...initialState,
       isLoading: false,
       error: 'Ошибка загрузки ленты'
     };
-    expect(testState).toEqual(checkState);
+    expect(testState).toEqual(expectedState);
   });
 });
+

@@ -1,11 +1,4 @@
-import { test, expect } from '@jest/globals';
-import {
-  addIngredient,
-  deleteIngredient,
-  burgerConstructorSlice,
-  initialState,
-  moveIngredient
-} from '../slices/constructorSlice';
+import { burgerConstructorSlice, addIngredient, deleteIngredient, moveIngredient, emptyConstructor } from '../slices/constructorSlice';
 import { TIngredient } from '@utils-types';
 
 const bunIngredient: TIngredient = {
@@ -19,7 +12,7 @@ const bunIngredient: TIngredient = {
   price: 988,
   image: 'https://code.s3.yandex.net/react/code/bun-01.png',
   image_mobile: 'https://code.s3.yandex.net/react/code/bun-01-mobile.png',
-  image_large: 'https://code.s3.yandex.net/react/code/bun-01-large.png'
+  image_large: 'https://code.s3.yandex.net/react/code/bun-01-large.png',
 };
 
 const mainIngredient: TIngredient = {
@@ -33,7 +26,7 @@ const mainIngredient: TIngredient = {
   price: 424,
   image: 'https://code.s3.yandex.net/react/code/meat-01.png',
   image_mobile: 'https://code.s3.yandex.net/react/code/meat-01-mobile.png',
-  image_large: 'https://code.s3.yandex.net/react/code/meat-01-large.png'
+  image_large: 'https://code.s3.yandex.net/react/code/meat-01-large.png',
 };
 
 const sauceIngredient: TIngredient = {
@@ -47,81 +40,159 @@ const sauceIngredient: TIngredient = {
   price: 80,
   image: 'https://code.s3.yandex.net/react/code/sauce-04.png',
   image_mobile: 'https://code.s3.yandex.net/react/code/sauce-04-mobile.png',
-  image_large: 'https://code.s3.yandex.net/react/code/sauce-04-large.png'
+  image_large: 'https://code.s3.yandex.net/react/code/sauce-04-large.png',
 };
 
-const burger = {
-  bun: { ...bunIngredient, id: '1' },
-  ingredients: [
-    { ...mainIngredient, id: '2' },
-    { ...sauceIngredient, id: '3' }
-  ]
+const initialState = {
+  bun: null,
+  ingredients: [],
 };
 
-describe('проверим слайс burgerConstructor - добавление ингредиента', () => {
-  test('проверим, что изначально конструктор пустой', () => {
-    const testState = burgerConstructorSlice.reducer(undefined, { type: '' });
-    expect(testState).toEqual(initialState);
+describe('burgerConstructorSlice', () => {
+
+  describe('добавление ингредиента', () => {
+
+    test('добавление булки в конструктор', () => {
+      const expectedState = {
+        bun: { ...bunIngredient, id: expect.any(String) },
+        ingredients: [],
+      };
+
+      const testState = burgerConstructorSlice.reducer(initialState, addIngredient(bunIngredient));
+
+      expect(testState).toEqual(expectedState);
+    });
+
+    test('добавление основного ингредиента в конструктор', () => {
+      const expectedState = {
+        bun: null,
+        ingredients: [{ ...mainIngredient, id: expect.any(String) }],
+      };
+
+      const testState = burgerConstructorSlice.reducer(initialState, addIngredient(mainIngredient));
+
+      expect(testState).toEqual(expectedState);
+    });
+
+    test('добавление соуса в конструктор', () => {
+      const expectedState = {
+        bun: null,
+        ingredients: [{ ...sauceIngredient, id: expect.any(String) }],
+      };
+
+      const testState = burgerConstructorSlice.reducer(initialState, addIngredient(sauceIngredient));
+
+      expect(testState).toEqual(expectedState);
+    });
   });
 
-  test('проверка добавления булки в заказ', () => {
-    const testState = burgerConstructorSlice.reducer(
-      initialState,
-      addIngredient(bunIngredient)
-    );
-    expect(testState.bun).toEqual(expect.objectContaining(bunIngredient));
+  describe('удаление ингредиента', () => {
+
+    test('удаление основного ингредиента', () => {
+      const initialStateWithIngredients = {
+        bun: { ...bunIngredient, id: '1' },
+        ingredients: [
+          { ...mainIngredient, id: '2' },
+          { ...sauceIngredient, id: '3' }
+        ],
+      };
+
+      const expectedState = {
+        bun: { ...bunIngredient, id: '1' },
+        ingredients: [{ ...sauceIngredient, id: '3' }],
+      };
+
+      const testState = burgerConstructorSlice.reducer(initialStateWithIngredients, deleteIngredient('2'));
+
+      expect(testState).toEqual(expectedState);
+    });
+
+    test('удаление соуса', () => {
+      const initialStateWithIngredients = {
+        bun: { ...bunIngredient, id: '1' },
+        ingredients: [
+          { ...mainIngredient, id: '2' },
+          { ...sauceIngredient, id: '3' }
+        ],
+      };
+
+      const expectedState = {
+        bun: { ...bunIngredient, id: '1' },
+        ingredients: [{ ...mainIngredient, id: '2' }],
+      };
+      
+      const testState = burgerConstructorSlice.reducer(initialStateWithIngredients, deleteIngredient('3'));
+      
+      expect(testState).toEqual(expectedState);
+    });
   });
 
-  test('проверка добавления основного ингредиента в заказ', () => {
-    const testState = burgerConstructorSlice.reducer(
-      initialState,
-      addIngredient(mainIngredient)
-    );
-    expect(testState.ingredients[0]).toEqual(
-      expect.objectContaining(mainIngredient)
-    );
+  describe('перемещение ингредиента', () => {
+
+    test('перемещение ингредиента с позиции 3 на позицию 2', () => {
+      const initialStateWithIngredients = {
+        bun: { ...bunIngredient, id: '1' },
+        ingredients: [
+          { ...mainIngredient, id: '2' },
+          { ...sauceIngredient, id: '3' }
+        ],
+      };
+
+      const expectedState = {
+        bun: { ...bunIngredient, id: '1' },
+        ingredients: [
+          { ...sauceIngredient, id: '3' },
+          { ...mainIngredient, id: '2' }
+        ],
+      };
+
+      const testState = burgerConstructorSlice.reducer(initialStateWithIngredients, moveIngredient({ from: 1, to: 0 }));
+
+      expect(testState).toEqual(expectedState);
+    });
+
+    test('перемещение ингредиента с позиции 2 на позицию 1', () => {
+      const initialStateWithIngredients = {
+        bun: { ...bunIngredient, id: '1' },
+        ingredients: [
+          { ...sauceIngredient, id: '3' },
+          { ...mainIngredient, id: '2' }
+        ],
+      };
+
+      const expectedState = {
+        bun: { ...bunIngredient, id: '1' },
+        ingredients: [
+          { ...mainIngredient, id: '2' },
+          { ...sauceIngredient, id: '3' }
+        ],
+      };
+
+      const testState = burgerConstructorSlice.reducer(initialStateWithIngredients, moveIngredient({ from: 1, to: 0 }));
+
+      expect(testState).toEqual(expectedState);
+    });
   });
 
-  test('проверка добавления соуса в заказ', () => {
-    const testState = burgerConstructorSlice.reducer(
-      initialState,
-      addIngredient(sauceIngredient)
-    );
-    expect(testState.ingredients[0]).toEqual(
-      expect.objectContaining(sauceIngredient)
-    );
-  });
-});
+  describe('очистка конструктора', () => {
 
-describe('проверим слайс burgerConstructor - удаление ингредиента', () => {
-  test('проверим удаление основного ингредиента', () => {
-    const testState = burgerConstructorSlice.reducer(
-      burger,
-      deleteIngredient('2')
-    );
-    expect(testState.ingredients).toHaveLength(1);
-    expect(testState.ingredients).not.toContain(mainIngredient);
-  });
+    test('очистка конструктора', () => {
+      const initialStateWithIngredients = {
+        bun: { ...bunIngredient, id: '1' },
+        ingredients: [
+          { ...mainIngredient, id: '2' },
+          { ...sauceIngredient, id: '3' }
+        ],
+      };
 
-  test('проверим удаление соуса', () => {
-    const testState = burgerConstructorSlice.reducer(
-      burger,
-      deleteIngredient('3')
-    );
-    expect(testState.ingredients).toHaveLength(1);
-    expect(testState.ingredients).not.toContain(sauceIngredient);
-  });
-});
+      const expectedState = {
+        bun: null,
+        ingredients: [],
+      };
 
-describe('проверим слайс burgerConstructor - перемещение ингредиента', () => {
-  test('проверим перемещение ингредиента с позиции 3 на позицию 2', () => {
-    const testState = burgerConstructorSlice.reducer(
-      burger,
-      moveIngredient({ from: 1, to: 0 })
-    );
-    expect(testState.ingredients).toEqual([
-      burger.ingredients[1],
-      burger.ingredients[0]
-    ]);
+      const testState = burgerConstructorSlice.reducer(initialStateWithIngredients, emptyConstructor());
+
+      expect(testState).toEqual(expectedState);
+    });
   });
 });
