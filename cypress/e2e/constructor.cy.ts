@@ -19,6 +19,7 @@ describe('проверка работы конструктора', () => {
   });
 
   it('должен открывать модальное окно ингредиента по клику и должно закрываться модальное окно по нажатию на крестик', () => {
+    cy.get(`[data-cy='modal']`).should('not.exist');
     cy.get(`[data-cy='ingredients-module'] [data-cy='ingredient-item']`).contains('Филе Люминесцентного тетраодонтимформа').click();
 
     cy.get(`[data-cy='modal']`).should('be.visible');
@@ -26,12 +27,10 @@ describe('проверка работы конструктора', () => {
 
     cy.get(`[data-cy='modal']`).find('button').click();
     cy.get(`[data-cy='modal']`).should('not.exist');
-
-    cy.get('body').type('{esc}');
-    cy.get(`[data-cy='modal']`).should('not.exist');
   });
 
   it('должно закрываться модальное окно по нажатию на кнопку esc', () => {
+    cy.get(`[data-cy='modal']`).should('not.exist');
     cy.get(`[data-cy='ingredients-module'] [data-cy='ingredient-item']`).first().click();
 
     cy.get(`[data-cy='modal']`).should('be.visible');
